@@ -14,6 +14,12 @@ public class Snake {
 		//FIXME - set up the segments instance variable
 		deltaX = 0;
 		deltaY = 0;
+		
+		segments = new LinkedList<>();
+		
+		BodySegment initialSegment = new BodySegment (0.5, 0.5, SEGMENT_SIZE);
+		segments.add(initialSegment);
+		
 	}
 	
 	public void changeDirection(int direction) {
@@ -38,6 +44,18 @@ public class Snake {
 	 */
 	public void move() {
 		//FIXME
+		BodySegment head = segments.getFirst();
+		double newX = head.getX() + deltaX;
+	    double newY = head.getY() + deltaY;
+	    BodySegment newHead = new BodySegment(newX, newY, SEGMENT_SIZE);
+	    segments.addFirst(newHead);
+	}
+	
+	public void grow() {
+        // Duplicate the tail to grow
+        BodySegment tail = segments.getLast();
+        BodySegment newSegment = new BodySegment(tail.getX(), tail.getY(), SEGMENT_SIZE);
+        segments.addLast(newSegment);
 	}
 	
 	/**
@@ -45,6 +63,9 @@ public class Snake {
 	 */
 	public void draw() {
 		//FIXME
+		for(int i = 0; i<segments.size(); i++) {
+			segments.get(i).draw();
+		}
 	}
 	
 	/**
@@ -54,7 +75,30 @@ public class Snake {
 	 */
 	public boolean eatFood(Food f) {
 		//FIXME
-		return false;
+		BodySegment head = segments.getFirst();
+	    double headX = head.getX();
+	    double headY = head.getY();
+	    
+	    double foodX = f.getX();
+	    double foodY = f.getY();
+	    double foodRadius = f.getFoodSize();
+
+	    
+	    double dx = headX - foodX;
+	    double dy = headY - foodY;
+	    double distance = Math.sqrt(dx * dx + dy * dy);
+	    
+	    
+	    if (distance < SEGMENT_SIZE / 2 + foodRadius) {
+	        
+	        return true;
+	    } else {
+	       
+	    	if (segments.size() > 1) {
+	            segments.removeLast();
+	        }
+	        return false;
+	    }
 	}
 	
 	/**
@@ -63,6 +107,9 @@ public class Snake {
 	 */
 	public boolean isInbounds() {
 		//FIXME
-		return true;
+		BodySegment head = segments.getFirst();
+        double x = head.getX();
+        double y = head.getY();
+        return x >= 0 && x <= 1 && y >= 0 && y <= 1;
 	}
 }
